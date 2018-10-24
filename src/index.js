@@ -1,6 +1,12 @@
 import express from 'express';
 import { join } from 'path';
 import config from './config/config';
+import cors from 'cors';
+
+//routes
+import slider from './routes/slider';
+//
+
 import { notFound, catchErrors } from './middlewares/errors';
 import bodyParser from 'body-parser';
 import register from 'babel-core/register';
@@ -10,7 +16,7 @@ import babelPolyfill from 'babel-polyfill';
 import dbConfig from './config/database';
 import mongoose from 'mongoose';
 
-mongoose.connect(dbConfig.mongoUrl);
+mongoose.connect(dbConfig.mongoUrl, {useNewParser: true});
 mongoose.Promise = global.Promise;
 mongoose.connection.on('error', (err) => {
     console.log('Could not connect to the database. Exiting now...');
@@ -26,6 +32,16 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // routes config
+
+// Config under this comment if for CORS
+
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
+
+app.use('/api/slider', slider());
 // ...
 
 // errors handling
